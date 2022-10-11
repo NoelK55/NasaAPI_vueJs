@@ -1,0 +1,92 @@
+
+<html>
+
+    <head>
+        <script src="https://unpkg.com/vue@2.4.3/dist/vue.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    </head>
+    
+    <body>
+        <h1 class="pageTitle">Nasa picture of the day</h1>
+        <div id="nasa">
+            <div v-for="(text, index) in packet" class="text">
+                {{text}} {{text.title}} {{text.explanation}}
+            </div>
+            <div class="image">
+                <img :src="img" style="width: 30%; height:auto">
+            </div>
+            <p class="copyrightText">
+                Copyright: {{cc}}
+            </p>
+        </div>
+    
+        <script language="javascript">
+            var vm = new Vue({
+                el: "#nasa",
+                data: {
+                    packet: null,
+                    img: null,
+                    cc: null,
+                },
+    
+                methods: {
+                    getData: async function () {
+    
+                        let listed = [];
+    
+                        await axios.get(`https://api.nasa.gov/planetary/apod?api_key=wqaftcRPzp6qzhpap9hAMMmm5L6YSluE8nxJQC5d`)
+                        .then((result) => {
+                            listed = result.data;
+                        });
+                        let allNeeds = []
+                        allNeeds.push(listed.date, listed.title, listed.explanation);
+                        this.packet = allNeeds.sort()
+                        let image = listed.hdurl;
+                        this.img = image;
+                        this.cc = listed.copyright;
+                    },
+                },
+    
+                mounted: async function () {
+                    this.getData();
+                },
+            });
+        </script>
+
+        <style>
+            .body {
+                background-color: whitesmoke;
+            }
+            .pageTitle {
+                margin-top: 40px;
+                text-align: center;
+                font-family: 'Roboto Mono', monospace;
+                font-size: 40px;
+            }
+
+            .text {
+                margin-top: 50px;
+                text-align: center;
+                font-family: 'Abyssinica SIL', serif;
+                font-size: 25px;
+                margin-left: 20%;
+                margin-right: 20%;
+            }
+            
+            .image {
+                margin-top:40px;
+                text-align: center;
+            }
+
+
+            .copyrightText {
+                padding-left: 35%;
+                font-family: 'Roboto Mono', monospace;
+                font-style: italic;
+            }
+
+            
+        </style>
+    </body>
+    
+    </html>
